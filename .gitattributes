@@ -1,0 +1,6 @@
+* text=auto eol=lf
+*.img binary
+*.bin binary
+*.ko binary
+*.so binary
+prebuilt/kernel binary
