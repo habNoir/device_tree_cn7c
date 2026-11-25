@@ -1,0 +1,66 @@
+# Copyright (C) 2012 The Android Open Source Project
+#
+# IMPORTANT: Do not create world writable files or directories.
+# This is a common source of Android security bugs.
+#
+
+import /vendor/etc/init/android.hardware.keymaster@4.1-service.mtee.rc
+import /vendor/etc/init/android.hardware.security.keymint-service.trustonic.rc
+import /vendor/etc/init/android.hardware.security.keymint@2.0-service.trustonic.rc
+import /vendor/etc/init/android.hardware.security.keymint@3.0-service.trustonic.rc
+import /vendor/etc/init/android.hardware.security.keymint-service.beanpod.rc
+#USD: add for attestation key install by wang.qin start
+import /vendor/etc/init/trustonic_kmsetkey_ca.rc
+#USD: add for attestation key install by wang.qin end
+#USD:add for rkp drm csr by wang.qin start
+import /vendor/etc/init/android.hardware.drm-service.clearkey.rc
+import /vendor/etc/init/android.hardware.drm-service-lazy.clearkey.rc
+#USD:add for rkp drm csr by wang.qin end
+#USD: add [rpmb] by jiayi.xiong start
+import /vendor/etc/init/vendor.transsion.hardware.security.rpmbservice@2.0-service.rc
+import /vendor/etc/init/mtk_storageproxyd.rc
+#USD: add [rpmb] by jiayi.xiong end
+
+import /vendor/etc/init/hw/meta_init.rc
+import /vendor/etc/init/android.hardware.boot-service.mtk.rc
+import /vendor/etc/init/android.hardware.boot-service.mtk-service-lazy.rc
+#USD: add soc_model_name by wangqin.kou 20250427 start
+import /vendor/etc/init/chipinfo_init.rc
+#USD: add soc_model_name by wangqin.kou 20250427 end
+
+on late-fs
+    class_start early_hal
+
+#USD : add x6870w by wangqin.kou 20250508 start
+#TRANSSION_START
+on property:persist.vendor.tran.wipedata=1
+    tran_factory_reset
+service shutdown_usbdis /bin/sh -c "sleep 1800 && reboot -p"
+    disabled
+    seclabel u:r:shell:s0
+
+on property:ro.bootmode=meta && property:vendor.usb.tran.state=disconnected
+    write /proc/bootprof "META: start shutdown..."
+    start shutdown_usbdis
+
+on property:ro.bootmode=meta && property:vendor.usb.tran.state=connected
+    write /proc/bootprof "META: stop shutdown..."
+    stop shutdown_usbdis
+#TRANSSION_END
+#USD : add x6870W by wangqin.kou 20250508 end
+
+#USD: add meta mode start P7 by shishan.zheng 20250408 start
+import /vendor/etc/init/vendor.transsion.hardware.security.trancriticalparavfy@1.0-service.rc
+#USD: add meta mode start P7 by shishan.zheng 20250408 end
+
+#USD: add meta mode start paytrigger by tie.huang 20250408 start
+import /vendor/etc/init/vendor.transsion.hardware.security.paytrigger@1.0-service.rc
+#USD: add meta mode start paytrigger by tie.huang 20250408 end
+
+
+#SATP: change tranfac file perms by fujia.chu 20250313 start
+on post-fs-data
+    chmod 0660 /mnt/vendor/persist/tranfac_sensor.properties
+    chmod 0660 /mnt/vendor/persist/tranfacmode.db
+    chmod 0660 /mnt/vendor/persist/oximeter.txt
+#SATP: change tranfac file perms by fujia.chu 20250313 end

@@ -1,0 +1,151 @@
+#
+# Copyright (C) 2026 The Android Open Source Project
+# Copyright (C) 2026 The LineageOS Project
+# Maintainer: habNoir
+#
+# Universal Base BoardConfig for TECNO CAMON 50 Pro 5G & Ultra 5G (TECNO-CN7c)
+# SoC: MediaTek Dimensity 7400 Ultimate (Part: MT6878V_E/TZA | Platform: mt6878)
+# Firmware Reference: CN7c-16.3.0.160SP03(OP005PF001M1)
+#
+
+DEVICE_PATH := device/tecno/CN7c
+
+# Architecture (Pure 64-bit ARMv8.2-A)
+TARGET_ARCH := arm64
+TARGET_ARCH_VARIANT := armv8-2a-dotprod
+TARGET_CPU_ABI := arm64-v8a
+TARGET_CPU_ABI2 :=
+TARGET_CPU_VARIANT := generic
+TARGET_CPU_VARIANT_RUNTIME := cortex-a55
+TARGET_USES_64_BIT_BINDER := true
+
+# Platform & Bootloader
+TARGET_BOARD_PLATFORM := mt6878
+TARGET_BOOTLOADER_BOARD_NAME := cn7c_h788
+TARGET_NO_BOOTLOADER := true
+TARGET_USES_UEFI := true
+TARGET_OTA_ASSERT_DEVICE := CN7c,TECNO-CN7c,CN7c-OP-M1,cn7c_h788,TECNO-CN7,CN7
+
+# GKI 2.0 Kernel & Vendor Boot v4 (Exact Stock CN7c-16.3.0.160SP03 Offsets)
+BOARD_USES_GENERIC_KERNEL_IMAGE := true
+BOARD_BOOT_HEADER_VERSION := 4
+BOARD_KERNEL_PAGESIZE := 4096
+BOARD_KERNEL_BASE := 0x40000000
+BOARD_KERNEL_OFFSET := 0x00000000
+BOARD_RAMDISK_OFFSET := 0x26f00000
+BOARD_TAGS_OFFSET := 0x07c80000
+BOARD_DTB_OFFSET := 0x07c80000
+BOARD_VENDOR_CMDLINE := bootopt=64S3,32N2,64N2
+BOARD_KERNEL_SEPARATED_DTBO := true
+BOARD_INCLUDE_DTB_IN_BOOTIMG := true
+BOARD_RAMDISK_USE_LZ4 := true
+
+TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/kernel
+TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb.img
+BOARD_PREBUILT_DTBOIMAGE := $(DEVICE_PATH)/prebuilt/dtbo.img
+
+BOARD_MKBOOTIMG_ARGS += \
+    --header_version $(BOARD_BOOT_HEADER_VERSION) \
+    --pagesize $(BOARD_KERNEL_PAGESIZE) \
+    --base $(BOARD_KERNEL_BASE) \
+    --kernel_offset $(BOARD_KERNEL_OFFSET) \
+    --ramdisk_offset $(BOARD_RAMDISK_OFFSET) \
+    --tags_offset $(BOARD_TAGS_OFFSET) \
+    --dtb $(TARGET_PREBUILT_DTB) \
+    --dtb_offset $(BOARD_DTB_OFFSET) \
+    --vendor_cmdline "$(BOARD_VENDOR_CMDLINE)"
+
+# Recovery in vendor_boot (Multi-ramdisk: Fragment 0 PLATFORM + Fragment 1 RECOVERY)
+BOARD_MOVE_RECOVERY_RESOURCES_TO_VENDOR_BOOT := true
+BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT := true
+BOARD_MOVE_GSI_AVB_KEYS_TO_VENDOR_BOOT := true
+TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/rootdir/etc/fstab.mt6878
+TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
+
+# Verified Boot (AVB 2.0)
+BOARD_AVB_ENABLE := true
+BOARD_AVB_MAKE_VBMETA_IMAGE_ARGS += --flags 3
+BOARD_AVB_VBMETA_SYSTEM := system system_ext product
+BOARD_AVB_VBMETA_SYSTEM_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
+BOARD_AVB_VBMETA_SYSTEM_ALGORITHM := SHA256_RSA2048
+BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
+BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX_LOCATION := 2
+BOARD_AVB_VBMETA_VENDOR := vendor
+BOARD_AVB_VBMETA_VENDOR_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
+BOARD_AVB_VBMETA_VENDOR_ALGORITHM := SHA256_RSA2048
+BOARD_AVB_VBMETA_VENDOR_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
+BOARD_AVB_VBMETA_VENDOR_ROLLBACK_INDEX_LOCATION := 4
+
+# Exact Physical Partition Sizes (Verified via blockdev --getsize64)
+BOARD_FLASH_BLOCK_SIZE := 262144
+BOARD_BOOTIMAGE_PARTITION_SIZE := 67108864
+BOARD_INIT_BOOT_IMAGE_PARTITION_SIZE := 8388608
+BOARD_VENDOR_BOOTIMAGE_PARTITION_SIZE := 67108864
+BOARD_DTBOIMG_PARTITION_SIZE := 8388608
+
+# Dynamic Partitions (Verified via lpdump: super = 16198402048, main = 16196304896)
+BOARD_SUPER_PARTITION_SIZE := 16198402048
+BOARD_SUPER_PARTITION_GROUPS := main
+BOARD_MAIN_SIZE := 16196304896
+BOARD_MAIN_PARTITION_LIST := \
+    system \
+    system_ext \
+    system_dlkm \
+    vendor \
+    vendor_dlkm \
+    product \
+    odm \
+    odm_dlkm
+
+# Filesystems (EROFS Read-Only Logical + F2FS Metadata & Userdata)
+BOARD_SYSTEMIMAGE_FILE_SYSTEM_TYPE := erofs
+BOARD_SYSTEM_EXTIMAGE_FILE_SYSTEM_TYPE := erofs
+BOARD_SYSTEM_DLKMIMAGE_FILE_SYSTEM_TYPE := erofs
+BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := erofs
+BOARD_VENDOR_DLKMIMAGE_FILE_SYSTEM_TYPE := erofs
+BOARD_PRODUCTIMAGE_FILE_SYSTEM_TYPE := erofs
+BOARD_ODMIMAGE_FILE_SYSTEM_TYPE := erofs
+BOARD_ODM_DLKMIMAGE_FILE_SYSTEM_TYPE := erofs
+BOARD_USERDATAIMAGE_FILE_SYSTEM_TYPE := f2fs
+BOARD_USES_METADATA_PARTITION := true
+TARGET_USERIMAGES_USE_EXT4 := true
+TARGET_USERIMAGES_USE_F2FS := true
+
+TARGET_COPY_OUT_SYSTEM_EXT := system_ext
+TARGET_COPY_OUT_SYSTEM_DLKM := system_dlkm
+TARGET_COPY_OUT_VENDOR := vendor
+TARGET_COPY_OUT_VENDOR_DLKM := vendor_dlkm
+TARGET_COPY_OUT_PRODUCT := product
+TARGET_COPY_OUT_ODM := odm
+TARGET_COPY_OUT_ODM_DLKM := odm_dlkm
+
+# Virtual A/B OTA
+AB_OTA_UPDATER := true
+AB_OTA_PARTITIONS += \
+    boot \
+    init_boot \
+    vendor_boot \
+    dtbo \
+    vbmeta \
+    vbmeta_system \
+    vbmeta_vendor \
+    system \
+    system_ext \
+    system_dlkm \
+    vendor \
+    vendor_dlkm \
+    product \
+    odm \
+    odm_dlkm
+
+# Display (1208x2644 @ 144Hz AMOLED)
+TARGET_SCREEN_DENSITY := 480
+
+# VINTF & Properties
+DEVICE_MANIFEST_FILE := $(DEVICE_PATH)/configs/vintf/vendor/manifest.xml
+DEVICE_MATRIX_FILE := $(DEVICE_PATH)/configs/vintf/vendor/compatibility_matrix.xml
+TARGET_SYSTEM_PROP += $(DEVICE_PATH)/system.prop
+TARGET_VENDOR_PROP += $(DEVICE_PATH)/vendor.prop
+TARGET_PRODUCT_PROP += $(DEVICE_PATH)/product.prop
+TARGET_ODM_PROP += $(DEVICE_PATH)/odm.prop
+TARGET_SYSTEM_EXT_PROP += $(DEVICE_PATH)/system_ext.prop

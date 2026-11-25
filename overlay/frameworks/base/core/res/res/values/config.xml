@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Display Brightness (sysfs max_brightness = 5119) -->
+    <integer name="config_screenBrightnessSettingMinimum">8</integer>
+    <integer name="config_screenBrightnessSettingMaximum">5119</integer>
+    <integer name="config_screenBrightnessSettingDefault">1024</integer>
+    <bool name="config_automatic_brightness_available">true</bool>
+    <!-- Centered Punch-Hole Cutout (1208x2644 @ 144Hz) -->
+    <string translatable="false" name="config_mainBuiltInDisplayCutout">M 0,0 H -36 V 110 H 36 V 0 Z @dp</string>
+    <bool name="config_fillMainBuiltInDisplayCutout">true</bool>
+    <bool name="config_dozeAlwaysOnDisplayAvailable">true</bool>
+</resources>

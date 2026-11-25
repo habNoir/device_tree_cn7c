@@ -1,0 +1,19 @@
+//
+// Copyright (C) 2026 The LineageOS Project
+// SPDX-License-Identifier: Apache-2.0
+//
+
+prebuilt_etc {
+    name: "fstab.mt6878",
+    src: "etc/fstab.mt6878",
+    vendor: true,
+    ramdisk_available: true,
+    vendor_ramdisk_available: true,
+}
+
+prebuilt_etc {
+    name: "ueventd.mt6878.rc",
+    filename: "ueventd.rc",
+    src: "etc/ueventd.mt6878.rc",
+    vendor: true,
+}
